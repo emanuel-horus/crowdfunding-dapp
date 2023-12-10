@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crowd Funding DAPP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/dapp/styles/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@100;300;400;500&display=swap"
+          rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Crowdfunding DAPP</h1>
+    </div>
+    <div class="projects" id="projects-table">
+        <div class="linha">
+
+            <h2>Projects</h2>
+            <button class="btn" data-bs-toggle="modal" data-bs-target="#addProjectModal">
+                <img src="assets/add.svg">
+            </button>
+        </div>
+        <div class="items-list" id="items-list"></div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="addProjectModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Cadastrar novo projeto</h5>
+                <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close">
+                    <img src="assets/x.svg">
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addProjectForm">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label class="form-label">Nome</label>
+                                <input name="name" class="form-control" placeholder="Informe o nome do projeto"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label class="form-label">Descrição</label>
+                                <textarea name="description" class="form-control"
+                                          placeholder="Informe uma descrição"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-7">
+                            <div class="mb-3">
+                                <label class="form-label">Valor da meta</label>
+                                <input name="goalAmount" type="number" class="form-control"
+                                       placeholder="Informe o valor da meta"/>
+                            </div>
+                        </div>
+                        <div class="col-5">
+                            <div class="mb-3">
+                                <label class="form-label">Data final</label>
+                                <input name="endDate" type="date" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-success" id="new-project-register">Cadastrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Detalhes do Projeto -->
+<div class="modal modal-xl fade" id="projectDetailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">Detalhes do projeto</h5>
+                <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close">
+                    <img src="assets/x.svg">
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <!-- Linha para Nome e Descrição do Projeto -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Nome</label>
+                            <p id="projectName" class="form-text"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Descrição</label>
+                            <p id="projectDescription" class="form-text"></p>
+                        </div>
+                    </div>
+
+                    <!-- Linha para Data Final e Endereço do Criador -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Data Final</label>
+                            <p id="projectEndDate" class="form-text"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Endereço do Criador</label>
+                            <br/>
+                            <a id="projectCreator" class="form-text"></a>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label class="form-label">Status do Projeto</label>
+                            <p id="statusProject" class="form-text"></p>
+                        </div>
+                    </div>
+
+                    <!-- Linha para Listar Metas -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label class="form-label">Metas do Projeto</label>
+                            <card id="projectGoalsList" class="list-group">
+                                <!-- Metas serão inseridas aqui dinamicamente -->
+                            </card>
+                        </div>
+                    </div>
+
+                    <!-- Linha para Progresso do Projeto -->
+                    <div class="row">
+                        <div class="col-12">
+                            <label class="form-label">Progresso do Projeto</label>
+                            <div class="progress mb-2">
+                                <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <div class="form-text d-flex justify-content-between">
+                                <span id="projectFundsRaised"></span>
+                                <span id="projectGoal"></span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" id="hiddenProjectId">
+                <button type="button" id="donateButton" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#donateFormModal" onclick="setProjectId()">Doar</button>
+                <button type="button" id="addGoalButton" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#goalModal" onclick="prepareGoalModal()">Cadastrar meta</button>
+                <button type="button" id="finalizeProjectButton" class="btn btn-danger" onclick="finalizeProject()">Finalizar projeto</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Formulário de Doação -->
+<div class="modal fade" id="donateFormModal" tabindex="-1" aria-labelledby="donateFormModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="donateFormModalLabel">Doar para o Projeto</h5>
+                <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close">
+                    <img src="assets/x.svg">
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulário para doação -->
+                <form id="donationForm">
+                    <input type="hidden" id="projectId" name="projectId" value="">
+                    <div class="mb-3">
+                        <label for="donationAmount" class="form-label">Valor da Doação</label>
+                        <input type="number" class="form-control" id="donationAmount" placeholder="Insira o valor">
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-success">Confirmar Doação</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Cadastrar Metas -->
+<div class="modal fade" id="goalModal" tabindex="-1" aria-labelledby="goalModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="goalModalLabel">Cadastrar meta</h5>
+                <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close">
+                    <img src="assets/x.svg">
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="goalForm">
+                    <input type="hidden" id="goalProjectId">
+
+                    <!-- Título da Meta -->
+                    <div class="mb-3">
+                        <label for="goalTitle" class="form-label">Título</label>
+                        <input type="text" class="form-control" id="goalTitle" required>
+                    </div>
+
+                    <!-- Descrição da Meta -->
+                    <div class="mb-3">
+                        <label for="goalDescription" class="form-label">Descrição</label>
+                        <textarea class="form-control" id="goalDescription" rows="3" required></textarea>
+                    </div>
+
+                    <!-- Valor da Meta -->
+                    <div class="mb-3">
+                        <label for="goalValue" class="form-label">Valor (em Wei)</label>
+                        <input type="number" class="form-control" id="goalValue" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="submitGoalForm()">Cadastrar meta</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="js/abi.js"></script>
+<script src="js/web3.js"></script>
+<script src="js/home.js"></script>
+</body>
+</html>
