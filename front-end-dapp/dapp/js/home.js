@@ -25,7 +25,7 @@ function renderProjects(projects) {
             <span>${project.id}</span>
             <h3 class="project-title">${project.title}</h3>
             <button class="btn" data-bs-toggle="modal" data-bs-target="#projectDetailsModal" data-id="${project.id}">
-                <img src="/dapp/assets/visibility.svg" alt="View">
+                <img src="assets/visibility.svg" alt="View">
             </button>
         `;
             itemsList.appendChild(projectDiv);
