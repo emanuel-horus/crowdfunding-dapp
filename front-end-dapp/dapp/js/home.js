@@ -105,7 +105,15 @@ function listGoals(projectId, projectValue, projectStatus) {
         var goalsList = document.getElementById('projectGoalsList');
         goalsList.innerHTML = '';
 
-        goals.forEach(goal => {
+        const sortedGoals = goals.sort((a, b) => {
+            if (a.value < b.value) {
+                return -1;
+            } else if (a.value > b.value) {
+                return 1;
+            }
+            return 0;
+        });
+        sortedGoals.forEach(goal => {
             var card = document.createElement('div');
             card.className = 'card mb-2';
 
