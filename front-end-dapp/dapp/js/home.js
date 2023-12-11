@@ -1,4 +1,3 @@
-// Inicializa o objeto DApp
 document.addEventListener("DOMContentLoaded", onDocumentLoad);
 
 function onDocumentLoad() {
@@ -30,7 +29,6 @@ function renderProjects(projects) {
         `;
             itemsList.appendChild(projectDiv);
 
-            // Correção: Seleciona o botão ao invés de um link
             const viewButton = projectDiv.querySelector(`button[data-id="${project.id}"]`);
             if (viewButton) {
                 viewButton.addEventListener('click', () => openProjectDetailsModal(project.id));
@@ -58,8 +56,6 @@ document.getElementById('new-project-register').addEventListener('click', () => 
     DApp.createProject(projectData).then(() => {
         closeModal();
     });
-
-    console.log(projectData);
 });
 
 function closeModal() {
@@ -69,14 +65,13 @@ function closeModal() {
 function openProjectDetailsModal(projectId) {
     DApp.viewProject(projectId).then(projectData => {
 
-        // Preenche os detalhes do modal com os dados do projeto
         document.getElementById('projectName').textContent = projectData._nome;
         document.getElementById('projectDescription').textContent = projectData._descricao;
-        document.getElementById('projectGoal').textContent = projectData._metaFinanceira + ' Wei'; // Exemplo de formatação
+        document.getElementById('projectGoal').textContent = projectData._metaFinanceira + ' Wei';
         document.getElementById('projectEndDate').textContent = new Date(parseInt(projectData._dataFinalizacao)).toLocaleDateString();
         document.getElementById('projectCreator').textContent = projectData._donoProjeto;
         document.getElementById('projectCreator').href = 'https://sepolia.etherscan.io/address/' +  projectData._donoProjeto;
-        document.getElementById('projectFundsRaised').textContent = projectData._totalArrecadado + ' Wei'; // Exemplo de formatação
+        document.getElementById('projectFundsRaised').textContent = projectData._totalArrecadado + ' Wei';
         document.getElementById('hiddenProjectId').value = projectData._id;
         document.getElementById('statusProject').textContent = projectData._status ? 'Projeto finalizado' : 'Projeto em andamento';
 
@@ -84,7 +79,7 @@ function openProjectDetailsModal(projectId) {
 
         listGoals(projectId, projectData._totalArrecadado, projectData._status);
 
-        if (projectData._status) { // Assumindo que _status é verdadeiro quando o projeto está finalizado
+        if (projectData._status) {
             document.getElementById('finalizeProjectButton').style.display = 'none';
             document.getElementById('donateButton').style.display = 'none';
             document.getElementById('addGoalButton').style.display = 'none';
@@ -141,7 +136,7 @@ function listGoals(projectId, projectValue, projectStatus) {
             }
 
             header.appendChild(goalId);
-            header.appendChild(status); // Adicionando o status ao header
+            header.appendChild(status);
 
             var goalDescription = document.createElement('p');
             goalDescription.className = 'card-text';
@@ -151,7 +146,7 @@ function listGoals(projectId, projectValue, projectStatus) {
             goalValue.className = 'card-text';
             goalValue.innerHTML = `<strong>Valor para atingir:</strong> ${goal.value} Wei`;
 
-            cardBody.appendChild(header); // Adicionando o header ao cardBody
+            cardBody.appendChild(header);
             cardBody.appendChild(goalDescription);
             cardBody.appendChild(goalValue);
             card.appendChild(cardBody);
@@ -166,9 +161,7 @@ function listGoals(projectId, projectValue, projectStatus) {
 
 
 function setProjectId() {
-    console.log("setProjectId chamada");
     var projectId = document.getElementById('hiddenProjectId').value;
-    console.log("projectId: ", projectId);
     document.getElementById('projectId').value = projectId;
 }
 
@@ -181,9 +174,6 @@ document.addEventListener('DOMContentLoaded', function() {
         var projectId = document.getElementById('projectId').value;
         var donationAmount = document.getElementById('donationAmount').value;
 
-        console.log('ID do Projeto:', projectId);
-        console.log('Valor da Doação:', donationAmount);
-
         DApp.donate(projectId, donationAmount).then(r => {
             closeModal();
         });
@@ -191,12 +181,11 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function updateProgressBar(totalArrecadado, metaFinanceira) {
-    // Convertendo BigInt para Number, se necessário
     var total = typeof totalArrecadado === 'bigint' ? Number(totalArrecadado) : totalArrecadado;
     var meta = typeof metaFinanceira === 'bigint' ? Number(metaFinanceira) : metaFinanceira;
 
     var percentual = (total / meta) * 100;
-    percentual = Math.min(Math.max(percentual, 0), 100); // Garante que o valor está entre 0 e 100
+    percentual = Math.min(Math.max(percentual, 0), 100);
 
     var progressBar = document.getElementById('progressBar');
     progressBar.style.width = percentual + '%';
@@ -207,10 +196,7 @@ function updateProgressBar(totalArrecadado, metaFinanceira) {
 function finalizeProject() {
     var projectId = document.getElementById('hiddenProjectId').value;
 
-    console.log("Finalizando o projeto com ID:", projectId);
-
     DApp.finish(projectId).then(r => {
-        console.log("Deu certo papai");
         closeModal();
     }).catch(error => {
         console.error("Erro ao finalizar o projeto:", error);
@@ -234,35 +220,9 @@ function submitGoalForm() {
     var description = document.getElementById('goalDescription').value;
     var value = document.getElementById('goalValue').value;
 
-    console.log("Enviando metas para o projeto ID:", projectId);
-
     DApp.createGoal(projectId, title, description, value).then(r => {
-        console.log("Meta cadastrada com sucesso");
         closeModal();
     }).catch(error => {
         console.error("Erro ao cadastrar meta:", error);
     });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

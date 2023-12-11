@@ -1,7 +1,5 @@
-// ENDEREÇO EHTEREUM DO CONTRATO
 var contractAddress = "0x01f69a26B043ffBBf8DB750FF936fE8Bb44ffDF7"; //V1.7.1
 
-// Nosso objeto DApp que irá armazenar a instância web3
 const DApp = {
     web3: null,
     contracts: {},
@@ -11,15 +9,14 @@ const DApp = {
         return DApp.initWeb3();
     },
 
-    // Inicializa o provedor web3
     initWeb3: async function () {
         if (typeof window.ethereum !== "undefined") {
             try {
-                const accounts = await window.ethereum.request({ // Requisita primeiro acesso ao Metamask
+                const accounts = await window.ethereum.request({
                     method: "eth_requestAccounts",
                 });
                 DApp.account = accounts[0];
-                window.ethereum.on('accountsChanged', DApp.updateAccount); // Atualiza se o usuário trocar de conta no Metamaslk
+                window.ethereum.on('accountsChanged', DApp.updateAccount);
             } catch (error) {
                 console.error("Usuário negou acesso ao web3!");
                 return;
@@ -32,19 +29,15 @@ const DApp = {
         return DApp.initContract();
     },
 
-    // Atualiza 'DApp.account' para a conta ativa no Metamask
     updateAccount: async function () {
         DApp.account = (await DApp.web3.eth.getAccounts())[0];
         atualizaInterface();
     },
 
-    // Associa ao endereço do seu contrato
     initContract: async function () {
         DApp.contracts.Contrato = new DApp.web3.eth.Contract(abi, contractAddress);
         return DApp.render();
     },
-
-    // Inicializa a interface HTML com os dados obtidos
 
     render: async function () {
         try {
@@ -57,24 +50,19 @@ const DApp = {
 
     listProjects: async function () {
         try {
-            // Faça a chamada ao método listarProjetos do contrato
             let projectData = await DApp.contracts.Contrato.methods.listarProjetos().call();
 
-            // Se projectData não for um objeto ou não tiver as propriedades esperadas, lance um erro
             if (typeof projectData !== 'object' || !projectData.hasOwnProperty('0') || !projectData.hasOwnProperty('1')) {
                 throw new Error('A estrutura dos dados retornados não é a esperada.');
             }
 
-            // Acessa as propriedades do objeto retornado diretamente
             const ids = projectData['0'];
             const names = projectData['1'];
 
-            // Certifique-se de que ambos são arrays antes de continuar
             if (!Array.isArray(ids) || !Array.isArray(names)) {
                 throw new Error('Os dados retornados não são arrays.');
             }
 
-            // Mapeia os ids e nomes para um array de objetos
             const projects = ids.map((id, index) => {
                 return {id: id, title: names[index]};
             });
@@ -100,8 +88,6 @@ const DApp = {
             }).then(() => {
                 this.render();
             });
-
-            console.log("Projeto cadastrado com sucesso.");
         } catch (error) {
             console.error("Erro ao cadastrar projeto:", error);
         }
@@ -109,13 +95,10 @@ const DApp = {
 
     viewProject: async function (id) {
         try {
-            // Usa o método .call() para ler dados da blockchain
             const projectDetails = await DApp.contracts.Contrato.methods.detalharProjeto(id).call({
                 from: DApp.account
             });
 
-            // Aqui você pode retornar os detalhes do projeto ou manipulá-los como necessário
-            console.log("Detalhes do projeto:", projectDetails);
             return projectDetails;
 
         } catch (error) {
@@ -144,7 +127,6 @@ const DApp = {
             }).then(() => {
                 this.render();
             }).catch(e => console.error("Erro ao finalizar projeto:", e));
-            console.log("Projeto finalizado com sucesso.");
         } catch (error) {
             console.error("Erro ao finalizar projeto:", error);
         }
@@ -162,8 +144,6 @@ const DApp = {
             }).then(() => {
                 this.render();
             });
-
-            console.log("Meta cadastrada com sucesso.");
         } catch (error) {
             console.error("Erro ao cadastrar meta:", error);
         }
@@ -172,8 +152,6 @@ const DApp = {
     listGoals: async function (idProjeto) {
         try {
             let projectData = await DApp.contracts.Contrato.methods.listarMetas(idProjeto).call();
-
-            console.log(projectData)
 
             if (typeof projectData !== 'object' || !projectData.hasOwnProperty('0') || !projectData.hasOwnProperty('1')) {
                 throw new Error('A estrutura dos dados retornados não é a esperada.');
