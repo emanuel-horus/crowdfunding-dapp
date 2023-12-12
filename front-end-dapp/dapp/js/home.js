@@ -1,3 +1,21 @@
+toastr.options = {
+    "closeButton": false,
+    "debug": false,
+    "newestOnTop": false,
+    "progressBar": false,
+    "positionClass": "toast-top-right",
+    "preventDuplicates": false,
+    "onclick": null,
+    "showDuration": "300",
+    "hideDuration": "1000",
+    "timeOut": "5000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+}
+
 document.addEventListener("DOMContentLoaded", onDocumentLoad);
 
 function onDocumentLoad() {
@@ -38,7 +56,8 @@ function renderProjects(projects) {
     }
 }
 
-document.getElementById('new-project-register').addEventListener('click', () => {
+document.getElementById('new-project-register').addEventListener('click', (e) => {
+    e.preventDefault()
     const form = document.getElementById('addProjectForm');
 
     const name = form.querySelector('input[name="name"]').value;
@@ -53,10 +72,26 @@ document.getElementById('new-project-register').addEventListener('click', () => 
         dataFinalizacao: endDate,
     };
 
-    DApp.createProject(projectData).then(() => {
-        closeModal();
-    });
+    if (validateProjectData(projectData)) {
+        DApp.createProject(projectData).then(() => {
+            closeModal();
+        });
+    }
 });
+
+function validateProjectData(data) {
+    if (!data.nome || !data.descricao || data.metaFinanceira === undefined || data.metaFinanceira === '' || !data.dataFinalizacao) {
+        toastr.error("Todos os campos devem ser preenchidos.", "Erro de Validação");
+        return false;
+    }
+    const currentDate = new Date();
+    const endDate = new Date(data.dataFinalizacao);
+    if (endDate < currentDate) {
+        toastr.error("A data de finalização não pode ser anterior à data atual.", "Erro de Validação");
+        return false;
+    }
+    return true;
+}
 
 function closeModal() {
     window.location.reload();
@@ -174,11 +209,21 @@ document.addEventListener('DOMContentLoaded', function() {
         var projectId = document.getElementById('projectId').value;
         var donationAmount = document.getElementById('donationAmount').value;
 
-        DApp.donate(projectId, donationAmount).then(r => {
-            closeModal();
-        });
+        if (validateDonationData(donationAmount)) {
+            DApp.donate(projectId, donationAmount).then(r => {
+                closeModal();
+            });
+        }
     });
 });
+
+function validateDonationData(data) {
+    if (data === undefined || data === '') {
+        toastr.error("Por favor, preencha o campo Valor da Doação.", "Erro de Validação");
+        return false;
+    }
+    return true;
+}
 
 function updateProgressBar(totalArrecadado, metaFinanceira) {
     var total = typeof totalArrecadado === 'bigint' ? Number(totalArrecadado) : totalArrecadado;
@@ -220,9 +265,19 @@ function submitGoalForm() {
     var description = document.getElementById('goalDescription').value;
     var value = document.getElementById('goalValue').value;
 
-    DApp.createGoal(projectId, title, description, value).then(r => {
-        closeModal();
-    }).catch(error => {
-        console.error("Erro ao cadastrar meta:", error);
-    });
+    if (validateGoal(title, description, value)) {
+        DApp.createGoal(projectId, title, description, value).then(r => {
+            closeModal();
+        }).catch(error => {
+            console.error("Erro ao cadastrar meta:", error);
+        });
+    }
+}
+
+function validateGoal(title, description, value) {
+    if (!title || !description || value === undefined || value === '') {
+        toastr.error("Todos os campos devem ser preenchidos.", "Erro de Validação");
+        return false;
+    }
+    return true;
 }
