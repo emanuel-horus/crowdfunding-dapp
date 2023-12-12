@@ -18,4 +18,9 @@ Blockchain
 
     * A blockchain é usada para segurança e transparência nas transações.
 
+Alunos
+
+    * Aluno 01: Emanuel Targino Barbosa
+    * Aluno 02: João Vitor de Oliveira Santos
+
 Acesse o app em: [Crowdfunding DApp para Jogos](https://emanuel-horus.github.io/crowdfunding-dapp/front-end-dapp/dapp/home.html).
